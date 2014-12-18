@@ -11,8 +11,8 @@ public class Connector extends Thread {
 
 	private BluetoothServerSocket serverSocket;
 
-	public Connector(BluetoothAdapter mBluetoothAdapter) throws Exception {
-		serverSocket = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(
+	public Connector(BluetoothAdapter bluetoothAdapter) throws Exception {
+		serverSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord(
 				Constants.CONNECTION_SERVICE_NAME, 
 				UUID.fromString(Constants.UUID));
 	}
