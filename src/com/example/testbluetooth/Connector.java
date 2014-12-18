@@ -9,10 +9,10 @@ import android.bluetooth.BluetoothSocket;
 //TODO should be changed to implement runnable interface and not extend thread class.
 public class Connector extends Thread {
 
-	private BluetoothServerSocket mmServerSocket;
+	private BluetoothServerSocket serverSocket;
 
 	public Connector(BluetoothAdapter mBluetoothAdapter) throws Exception {
-		mmServerSocket = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(
+		serverSocket = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(
 				Constants.CONNECTION_SERVICE_NAME, 
 				UUID.fromString(Constants.UUID));
 	}
@@ -21,7 +21,7 @@ public class Connector extends Thread {
 		BluetoothSocket socket = null;
 		while (true) {
 			try {
-				socket = mmServerSocket.accept();
+				socket = serverSocket.accept();
 			} catch (IOException e) {
 				e.printStackTrace();
 				break;
@@ -29,7 +29,7 @@ public class Connector extends Thread {
 			if (socket != null) {
 				manageConnectedSocket(socket);
 				try {
-					mmServerSocket.close();
+					serverSocket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

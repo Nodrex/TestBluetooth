@@ -16,8 +16,8 @@ import android.view.WindowManager;
 
 public class MainActivity extends Activity {
 
-	private BluetoothAdapter mBluetoothAdapter;
-	private BroadcastReceiver mReceiver;
+	private BluetoothAdapter bluetoothAdapter;
+	private BroadcastReceiver receiver;
 	private BluetoothDevice device;
 	
 	@Override
@@ -29,13 +29,13 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		// Detect if device have bt
-		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		if (mBluetoothAdapter == null) {
+		bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		if (bluetoothAdapter == null) {
 			Util.toast(this, "bluetoothAdapter is not supported");
 		}
 
 		// request to turn on bt
-		if (!mBluetoothAdapter.isEnabled()) {
+		if (!bluetoothAdapter.isEnabled()) {
 			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			startActivityForResult(enableBtIntent, Constants.PROCESS_BLUETOOTH_ON_Id);
 		} else {
@@ -54,8 +54,8 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if(mReceiver == null) return;
-		unregisterReceiver(mReceiver);
+		if(receiver == null) return;
+		unregisterReceiver(receiver);
 	}
 	
 	/**
@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
 	 */
 	private void scanPairedDevices() {
 		List<String> l = new ArrayList<>();
-		Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+		Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
 		if (pairedDevices.size() > 0) {
 			for (BluetoothDevice device : pairedDevices) {
 				l.add(device.getName() + "\n" + device.getAddress());
@@ -89,7 +89,7 @@ public class MainActivity extends Activity {
 	 */
 	private void scanNewDevices() {
 		final List<String> l = new ArrayList<>();
-		mReceiver = new BroadcastReceiver() {
+		receiver = new BroadcastReceiver() {
 			public void onReceive(Context context, Intent intent) {
 				String action = intent.getAction();
 				if (BluetoothDevice.ACTION_FOUND.equals(action)) {
@@ -98,7 +98,7 @@ public class MainActivity extends Activity {
 				}
 				if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
 					try {
-						new Connector(mBluetoothAdapter).start();
+						new Connector(bluetoothAdapter).start();
 					} catch (Exception e) {
 						l.clear();
 						l.add("Could not connect to device:");
@@ -115,8 +115,8 @@ public class MainActivity extends Activity {
 		
 		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-		registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
-		mBluetoothAdapter.startDiscovery();//starts bt device discovering
+		registerReceiver(receiver, filter); // Don't forget to unregister during onDestroy
+		bluetoothAdapter.startDiscovery();//starts bt device discovering
 	}
 	
 }
