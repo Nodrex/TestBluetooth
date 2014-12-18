@@ -12,16 +12,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.ParcelUuid;
+import android.view.WindowManager;
 
 public class MainActivity extends Activity {
 
 	private BluetoothAdapter mBluetoothAdapter;
 	private BroadcastReceiver mReceiver;
+	private BluetoothDevice device;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
 		setContentView(R.layout.activity_main);
 
 		// Detect if device have bt
@@ -55,7 +59,7 @@ public class MainActivity extends Activity {
 	}
 	
 	/**
-	 * asks user if he wants to turn on visibility that other devices will be available to see this device via bluetooth.
+	 * Asks user if he wants to turn on visibility that other devices will be available to see this device via bluetooth.
 	 */
 	private void requestVisibility(){
 		Intent discoverableIntent = new
@@ -66,7 +70,7 @@ public class MainActivity extends Activity {
 	
 
 	/**
-	 * scans paired devices.
+	 * Scans paired devices.
 	 */
 	private void scanPairedDevices() {
 		List<String> l = new ArrayList<>();
@@ -80,11 +84,8 @@ public class MainActivity extends Activity {
 		scanNewDevices();
 	}
 	
-	
-	BluetoothDevice device = null;
-	
 	/**
-	 * Search for new devices
+	 * Search for new devices.
 	 */
 	private void scanNewDevices() {
 		final List<String> l = new ArrayList<>();
@@ -96,10 +97,8 @@ public class MainActivity extends Activity {
 					l.add(device.getName() + "\n" + device.getAddress());
 				}
 				if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
-					ParcelUuid[] uuids = null;
-					if(device.fetchUuidsWithSdp()) uuids = device.getUuids();
 					try {
-						new Connector(mBluetoothAdapter, uuids[0].getUuid()).start();
+						new Connector(mBluetoothAdapter).start();
 					} catch (Exception e) {
 						l.clear();
 						l.add("Could not connect to device:");
@@ -107,7 +106,6 @@ public class MainActivity extends Activity {
 						l.add(e.toString());
 						Util.messagBox(MainActivity.this, l);
 					}
-					
 				}
 				if(!l.isEmpty()){
 					//Util.messagBox(MainActivity.this, l);

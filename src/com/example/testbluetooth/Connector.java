@@ -11,9 +11,10 @@ public class Connector extends Thread {
 
 	private BluetoothServerSocket mmServerSocket;
 
-	public Connector(BluetoothAdapter mBluetoothAdapter, UUID uuid) throws Exception {
-		mmServerSocket = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(Constants.CONNECTION_SERVICE_NAME, uuid);
-		System.out.println(mmServerSocket);
+	public Connector(BluetoothAdapter mBluetoothAdapter) throws Exception {
+		mmServerSocket = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(
+				Constants.CONNECTION_SERVICE_NAME, 
+				UUID.fromString(Constants.UUID));
 	}
 
 	public void run() {
@@ -22,11 +23,11 @@ public class Connector extends Thread {
 			try {
 				socket = mmServerSocket.accept();
 			} catch (IOException e) {
+				e.printStackTrace();
 				break;
 			}
 			if (socket != null) {
-				// manageConnectedSocket(socket);
-				System.out.println(socket);
+				manageConnectedSocket(socket);
 				try {
 					mmServerSocket.close();
 				} catch (IOException e) {
@@ -34,6 +35,16 @@ public class Connector extends Thread {
 				}
 				break;
 			}
+		}
+	}
+
+	private void manageConnectedSocket(BluetoothSocket socket) {
+		try {
+			byte[] buffer = new byte[1024];
+			socket.getInputStream().read(buffer);
+			new String(buffer);
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 	}
 	
